@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定LoginMapper接口-->
+<mapper namespace="com.zzw.mapper.DeviceInfoMapper">
+
+    <select id="generalSelectInterface" resultType="DeviceInfo" parameterType="map">
+        select * from device_info
+        <where>
+            <if test="nameSure != null">
+                and name = #{nameSure}
+            </if>
+            <if test="nameFuzzy != null">
+                and name like concat('%',#{nameFuzzy},'%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by deviceId desc limit #{startIndex},#{pageSize}
+    </select>
+    <select id="generalSelectInterfaceNum" resultType="int" parameterType="map">
+        select count(*) from device_info
+        <where>
+        <if test="nameSure != null">
+            and name = #{nameSure}
+        </if>
+        <if test="nameFuzzy != null">
+            and name like concat('%',#{nameFuzzy},'%')
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        </where>
+    </select>
+
+
+    <update id="updateDevice" parameterType="DeviceInfo">
+        update device_info
+        <set>
+            <if test="name != null">
+            name = #{name},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="startTime != null">
+                startTime = #{startTime},
+            </if>
+            <if test="closeTime != null">
+                closeTime = #{closeTime},
+            </if>
+        </set>
+        where deviceId = #{deviceId}
+    </update>
+
+    <delete id="delDevice" parameterType="int">
+        delete from device_info where deviceId = #{deviceId}
+    </delete>
+
+    <insert id="addDevice" parameterType="DeviceInfo">
+         insert into device_info (name,status,startTime,closeTime) values (#{name},#{status},#{startTime},#{closeTime});
+    </insert>
+
+<!--    这是index页面要用到的接口-->
+    <select id="selectAll" resultType="DeviceInfo">
+        select * from device_info order by deviceId desc
+    </select>
+
+</mapper>

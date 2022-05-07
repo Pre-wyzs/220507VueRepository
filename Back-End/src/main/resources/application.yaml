@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    username: root
+    password: phptoor
+    url: jdbc:mysql://localhost:3306/vuespringboot?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      #链接的最长闲置时间是20s，如果20s没干活就放回连接池中了
+      #idleTimeout: 20000
+      #池中最少有20个备用的连接
+      minimumIdle: 20
+      #池中最大不得超过30个连接
+      maximumPoolSize: 30
+      #连接在用完后3秒以内就要断开回收到连接池中
+      #这是它的最小值了，不能再比这个还小了。。。
+      max-lifetime: 30000
+      idle-timeout: 10000
+
+  #文件上传大小的设置
+  servlet:
+    multipart:
+      max-file-size: 100MB  #单个数据的大小不超过100MB，
+      max-request-size: 200MB #总的数据大小不超过200MB，就是有时候可以一次性上传多个文件，所以就有了这连个东西捏
+
+  #因为我用的是mybatis，然后最新的boot默认的是jpa操作数据库，所以没有用它的话会爆这个警告，把这个改为false就行了
+  jpa:
+    open-in-view: false
+
+
+#mytabtis的配置
+mybatis:
+  type-aliases-package: com.zzw.entity #配置别名包
+  mapper-locations: classpath:mybatis/*.xml  #为*.xml配置路径好让它被spring容器接管
+
+
+#百度云ai配置
+ai:
+  appId: 25939935
+  apiKey: KGUsXe8bkZXea6ZYg78g7Hnd
+  secretKey: d8nHXjW9WaGfosX5cjBS1IKrEgMC54IG
+  imageType: BASE64
+  groupId: itcast
+
+#二维码生成配置
+qr:
+  url: http:\\localhost:8080\test
+  format: png
+
+

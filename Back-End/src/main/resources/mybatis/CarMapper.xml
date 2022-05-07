@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定CarMapper接口-->
+<mapper namespace="com.zzw.mapper.CarMapper">
+    <!--导出所有的车辆信息-->
+    <select id="selectAll" resultType="Car">
+        select * from car order by id desc
+    </select>
+
+    <select id="selectAllIMEIS" resultType="string">
+        select IMEI from car
+    </select>
+
+    <delete id="delCar" parameterType="string">
+        delete from car where IMEI = #{IMEI}
+    </delete>
+
+    <insert id="addCar" parameterType="Car">
+        insert into car (IMEI,name,team,license,timeStamp,jd,wd) values (#{IMEI},#{name},#{team},#{license},#{timeStamp},#{jd},#{wd});
+    </insert>
+
+<!--    这里的更新时比较特殊的，就是如果是增加一辆车的时候，那个时间戳和经度纬度是null的-->
+<!--    但是如果是更新从后端直接传回来的时间戳和经纬度那就只改那些就行了-->
+    <update id="updateCar" parameterType="Car">
+        update car
+        <set>
+            <if test="IMEI!=null">
+                IMEI = #{IMEI},
+            </if>
+            <if test="name!=null">
+                name = #{name},
+            </if>
+            <if test="team!=null">
+                team = #{team},
+            </if>
+            <if test="license!=null">
+                license = #{license},
+            </if>
+            <if test="timeStamp!=null">
+                timeStamp = #{timeStamp},
+            </if>
+            <if test="jd!=null">
+                jd = #{jd},
+            </if>
+            <if test="wd!=null">
+                wd = #{wd},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="generalSelectInterface" parameterType="map" resultType="Car">
+        select * from car
+        <where>
+            <if test="IMEI != null">
+                and IMEI = #{IMEI}
+            </if>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="team != null">
+                and team like concat('%',#{team},'%')
+            </if>
+            <if test="license != null">
+                and license = #{license}
+            </if>
+            <if test="startDate != null">
+                and timeStamp >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and #{endDate} >= timeStamp
+            </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+    <select id="generalSelectInterfaceNum" parameterType="map" resultType="int">
+        select count(*) from car
+        <where>
+            <if test="IMEI != null">
+                and IMEI = #{IMEI}
+            </if>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="team != null">
+                and team like concat('%',#{team},'%')
+            </if>
+            <if test="license != null">
+                and license = #{license}
+            </if>
+            <if test="startDate != null">
+                and timeStamp >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and #{endDate} >= timeStamp
+            </if>
+        </where>
+    </select>
+
+
+
+
+</mapper>

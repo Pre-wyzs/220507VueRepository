@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzw.mapper.UserMapper">
+
+    <!--    这是交叉查询的总接口的数据总量显示！！！-->
+    <select id="generalSelectInterfaceNum" resultType="int" parameterType="map">
+        select count(*) from user
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="power != null">
+                and power = #{power}
+            </if>
+            <if test="nameSure != null">
+                and name = #{nameSure}
+            </if>
+            <if test="nameFuzzy != null">
+                and name like concat('%',#{nameFuzzy},'%')
+            </if>
+        </where>
+    </select>
+
+<!--    这是交叉查询的总接口！！！-->
+    <select id="generalSelectInterface" resultType="User" parameterType="map">
+        select * from user
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="power != null">
+                and power = #{power}
+            </if>
+            <if test="nameSure != null">
+                and name = #{nameSure}
+            </if>
+            <if test="nameFuzzy != null">
+                and name like concat('%',#{nameFuzzy},'%')
+            </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+
+    <select id="selectLength" resultType="int" parameterType="map">
+        select count(*) from user
+        <where>
+            <if test="name != null">
+                and name like '%'||#{name}||'%'
+            </if>
+            <if test="power != null">
+                and power = #{power}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="getUsersByName" parameterType="map" resultType="User">
+select * from user where name like '%'+#{name}+'%' order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="selectByPower" resultType="User" parameterType="map">
+select * from user where power = #{power} order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="selectUsers" resultType="User" parameterType="map">
+        select * from user order by id desc limit #{startIndex},#{pageSize}
+
+    </select>
+
+    <select id="selectUserById" resultType="User">
+        select * from user where id = #{id}
+    </select>
+
+    <select id="selectUserByName" resultType="User">
+        select * from user where name = #{name}
+    </select>
+
+    <insert id="addUser" parameterType="User">
+        insert into user (id,name,password,power) values (#{id},#{name},#{password},#{power});
+    </insert>
+
+
+    <update id="updateUser" parameterType="User">
+        update user set name=#{name},password=#{password},power=#{power} where id = #{id}
+    </update>
+
+
+    <delete id="deleteUser" parameterType="int">
+        delete from user where id = #{id}
+    </delete>
+
+</mapper>

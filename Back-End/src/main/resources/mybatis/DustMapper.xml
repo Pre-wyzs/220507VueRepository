@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定DustMapper接口-->
+<mapper namespace="com.zzw.mapper.DustMapper">
+
+    <select id="selectAll" resultType="Dust">
+        select * from dust order by id desc
+    </select>
+
+    <select id="generalSelectInterface" resultType="Dust" parameterType="map">
+        select * from dust
+        <where>
+        <if test="startTime != null">
+            and timeStamp >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and #{endTime} >= timeStamp
+        </if>
+        <if test="degree != null">
+            and degree = #{degree}
+        </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="generalSelectInterfaceNum" resultType="int" parameterType="map">
+        select count(*) from dust
+        <where>
+            <if test="startTime != null">
+                and timeStamp >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and #{endTime} >= timeStamp
+            </if>
+            <if test="degree != null">
+                and degree = #{degree}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="addDust" parameterType="Dust">
+        insert into dust (timeStamp,AQI,PM10,PM25,degree) values (#{timeStamp},#{AQI},#{PM10},#{PM25},#{degree})
+    </insert>
+
+    <delete id="delDust" parameterType="int">
+        delete from dust where id = #{id}
+    </delete>
+
+<!--    index页面的需要的接口-->
+    <select id="selectLatest" parameterType="int" resultType="Dust">
+        select * from dust order by id desc limit 0,#{size}
+    </select>
+
+
+</mapper>
+
+

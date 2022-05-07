@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定ExhaustMapper接口-->
+<mapper namespace="com.zzw.mapper.ExhaustMapper">
+    <select id="selectAll" resultType="Exhaust">
+        select * from exhaust order by id desc
+    </select>
+
+
+    <select id="selectByLimit" parameterType="map" resultType="Exhaust">
+        select * from exhaust order by id desc limit #{startIndex},#{chartSize}
+    </select>
+
+    <insert id="addExhaustData" parameterType="Exhaust">
+        insert into exhaust (SO2,NO,O3,HF,C6H6,timeStamp) values (#{SO2},#{NO},#{O3},#{HF},#{C6H6},#{timeStamp});
+    </insert>
+
+    <delete id="delExhaustData" parameterType="int">
+        delete from exhaust where id = #{id}
+    </delete>
+
+<!--    删除距今一个月以前的所有记录数据-->
+    <delete id="delExhaustDataMonth" parameterType="map">
+        delete  from exhaust where timeStamp >= #{aMonthAgo} and #{currentTime} >= timeStamp
+    </delete>
+<!-- index主页要用到的-->
+    <select id="selectLatest" resultType="Exhaust">
+        select * from exhaust order by timeStamp desc limit 0,1
+    </select>
+
+</mapper>

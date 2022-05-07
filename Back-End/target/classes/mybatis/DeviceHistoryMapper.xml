@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定LoginMapper接口-->
+<mapper namespace="com.zzw.mapper.DeviceHistoryMapper">
+    <delete id="delDeviceHistory" parameterType="int">
+        delete from device_history where id = #{id}
+    </delete>
+
+    <insert id="addDeviceHistory" parameterType="DeviceHistory">
+        insert into device_history (deviceId,name,dateTime,status) values (#{deviceId},#{name},#{dateTime},#{status});
+    </insert>
+
+    <select id="generalSelectInterface" parameterType="map" resultType="DeviceHistory">
+        select * from device_history
+            <where>
+                <if test="nameSure != null">
+                    and name = #{nameSure}
+                </if>
+                <if test="nameFuzzy != null">
+                    and name like concat('%',#{nameFuzzy},'%')
+                </if>
+                <if test="startDate != null">
+                    and dateTime >= #{startDate}
+                </if>
+                <if test="endDate != null">
+                    and #{endDate} >= dateTime
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+            </where>
+            order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="generalSelectInterfaceNum" parameterType="map" resultType="int">
+        select count(*) from device_history
+        <where>
+            <if test="nameSure != null">
+                and name = #{nameSure}
+            </if>
+            <if test="nameFuzzy != null">
+                and name like concat('%',#{nameFuzzy},'%')
+            </if>
+            <if test="startDate != null">
+                and dateTime >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and #{endDate} >= dateTime
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>

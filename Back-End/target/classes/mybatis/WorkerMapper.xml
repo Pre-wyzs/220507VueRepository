@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定WorkerMapper接口-->
+<mapper namespace="com.zzw.mapper.WorkerMapper">
+
+    
+<!--    根据百度人脸库的添加要求，需要返回id和对应的图片路径两个字段-->
+    <select id="selectIdByPhoto" resultType="Worker" parameterType="string">
+        select * from worker where photo = #{photo};
+    </select>
+
+<!--    业务需求，根据id select-->
+    <select id="selectById" resultType="Worker" parameterType="int">
+        select * from worker where id = #{id}
+    </select>
+
+    
+
+    <select id="selectAll" resultType="Worker">
+select * from worker
+    </select>
+
+    <select id="generalSelectInterfaceNum" resultType="int" parameterType="map">
+        select count(*) from worker
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="enterprise != null">
+                and enterprise like concat('%',#{enterprise},'%')
+            </if>
+            <if test="idCard != null">
+                and idCard = #{idCard}
+            </if>
+            <if test="phone != null">
+            and phone = #{phone}
+            </if>
+            <if test="status != null">
+            and status = #{status}
+            </if>
+            <if test="team != null">
+                and team = #{team}
+            </if>
+            <if test="age !=null ">
+                and age = #{age}
+            </if>
+            <if test="kind !=null">
+                and kind like concat('%',#{kind},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--    这是交叉查询的总接口！！！-->
+    <select id="generalSelectInterface" resultType="Worker" parameterType="map">
+        select * from worker
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="enterprise != null">
+                and enterprise like concat('%',#{enterprise},'%')
+            </if>
+            <if test="idCard != null">
+                and idCard = #{idCard}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="team != null">
+                and team = #{team}
+            </if>
+            <if test="age !=null ">
+                and age = #{age}
+            </if>
+            <if test="kind !=null">
+                and kind like concat('%',#{kind},'%')
+            </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+<!--    增-->
+    <insert id="addWorker" parameterType="Worker">
+        insert into worker (name,team,idCard,age,sex,phone,enterprise,kind,photo)
+        values (#{name},#{team},#{idCard},#{age},#{sex},#{phone},#{enterprise},#{kind},#{photo})
+    </insert>
+
+<!--    删-->
+    <delete id="delWorker" parameterType="int">
+        delete from worker where id = #{id}
+    </delete>
+
+<!--    改-->
+    <update id="updateWorker" parameterType="Worker">
+        update worker set name=#{name},team=#{team},idCard=#{idCard},age=#{age},
+        sex=#{sex},phone=#{phone},enterprise=#{enterprise},kind=#{kind},status=#{status},
+        photo=#{photo}
+        where id = #{id}
+    </update>
+
+<!--    只改状态-->
+    <update id="updateWorkerStatus" parameterType="map">
+        update worker set status=#{status}
+        where id = #{id}
+    </update>
+
+</mapper>

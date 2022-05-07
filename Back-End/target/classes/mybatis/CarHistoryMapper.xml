@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定CarMapper接口-->
+<mapper namespace="com.zzw.mapper.CarHistoryMapper">
+
+    <select id="selectAll" resultType="CarHistory">
+        select * from car_history order by id desc
+    </select>
+
+    <insert id="addCarHistory" parameterType="CarHistory">
+        insert into car_history (license,IMEI,jd,wd,timeStamp,carStatus) values(#{license},#{IMEI},#{jd},#{wd},#{timeStamp},#{carStatus})
+    </insert>
+
+    <delete id="delCarHistory" parameterType="int">
+        delete from car_history where id =#{id}
+    </delete>
+
+    <delete id="delHistoryByIMEI" parameterType="string">
+        delete from car_history where IMEI = #{IMEI}
+    </delete>
+
+
+    <select id="generalSelectInterface" parameterType="map" resultType="CarHistory">
+        select * from car_history
+        <where>
+            <if test="license !=null">
+                and license = #{license}
+            </if>
+            <if test="IMEI!=null">
+                and IMEI = #{IMEI}
+            </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="generalSelectInterfaceNum" parameterType="map" resultType="int">
+        select count(*) from car_history
+        <where>
+            <if test="license !=null">
+                and license = #{license}
+            </if>
+            <if test="IMEI!=null">
+                and IMEI = #{IMEI}
+            </if>
+        </where>
+    </select>
+
+<!--    比较特殊的对于前端地图而言战术的数据-->
+    <select id="selectOneCar" parameterType="string" resultType="CarHistory">
+        select * from car_history where IMEI = #{IMEI} and
+        id>=IFNULL((select id from car_history where IMEI = #{IMEI} and carStatus=0 order by id desc limit 1,1),1) order by id desc
+    </select>
+
+    
+<!--    添加一个修改路径信息的方法，因为考虑到车辆信息表会修改它的车辆信息，所以要对应的修改车辆历史记录的信息才对捏-->
+<!--    根据表结构的设计，好像能修改的也只有车牌号捏。。。-->
+    <update id="updateCarHistory" parameterType="map">
+        update car_history set license = #{license} where IMEI = #{IMEI}
+    </update>
+
+    
+</mapper>

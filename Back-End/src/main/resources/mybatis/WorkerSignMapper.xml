@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定WorkerSignMapper接口-->
+<mapper namespace="com.zzw.mapper.WorkerSignMapper">
+
+
+    <select id="selectAll" resultType="WorkerSign">
+        select * from worker_sign
+    </select>
+
+
+    <select id="generalSelectInterface" parameterType="map" resultType="WorkerSign">
+        select * from worker_sign
+        <where>
+        <if test="idCard !=null ">
+            and idCard = #{idCard}
+        </if>
+        <if test="name !=null">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="enterprise != null">
+            and  enterprise like concat('%',#{enterprise},'%')
+        </if>
+        <if test="startTime !=null">
+            and timestamp >= #{startTime}
+        </if>
+        <if test="endTime !=null">
+            and #{endTime} >= timestamp
+        </if>
+        <if test="team !=null">
+            and team = #{team}
+        </if>
+        <if test="purpose !=null">
+            and purpose = #{purpose}
+        </if>
+        <if test="sign !=null">
+            and sign = #{sign}
+        </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="generalSelectInterfaceNum" parameterType="map" resultType="int">
+        select count(*) from worker_sign
+        <where>
+            <if test="idCard !=null ">
+                and idCard = #{idCard}
+            </if>
+            <if test="name !=null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="enterprise != null">
+                and  enterprise like concat('%',#{enterprise},'%')
+            </if>
+            <if test="startTime !=null">
+                and timestamp >= #{startTime}
+            </if>
+            <if test="endTime !=null">
+                and #{endTime} >= timestamp
+            </if>
+            <if test="team !=null">
+                and team = #{team}
+            </if>
+            <if test="purpose !=null">
+                and purpose = #{purpose}
+            </if>
+            <if test="sign !=null">
+                and sign = #{sign}
+            </if>
+        </where>
+
+    </select>
+
+    <insert id="addWorkerSign" parameterType="WorkerSign">
+        insert into worker_sign (name,idCard,team,enterprise,purpose,sign,photo,timeStamp) values(
+        #{name},#{idCard},#{team},#{enterprise},#{purpose},#{sign},#{photo},#{timeStamp}
+        )
+    </insert>
+
+    <delete id="delWorkerSign" parameterType="int">
+        delete from worker_sign where id = #{id}
+    </delete>
+
+<!--    因为只会更新它的签到状态对吧，就是提交补签的申请时候就可以通过的时候就可以执行这个update语句了
+        这个的补签我是想在最右边的操作框里面，就是如果这一条记录是未签到的话，就会显示一个button叫做补签，你点击这个补签之后就可以
+        把这个状态改成补签了，至于审核这些东西就交给他们自己处理吧，不然的话工作量是在是太大了。
+-->
+    <update id="updateWorkerSign" parameterType="WorkerSign">
+        update worker_sign set sign = #{sign} where id = #{id}
+    </update>
+
+
+
+<!--    index页面要用到的返回莫一天的签到人数-->
+    <select id="signNumADay" resultType="int" parameterType="map">
+        select count(*) from worker_sign
+        <where>
+<!--            开始的时间是一定会有的-->
+            timeStamp >= #{startTime}
+<!--            结束的时间不定有，因为最后一个的首就没有结束的时间了-->
+            <if test="endTime != null">
+                and #{endTime} > timeStamp
+            </if>
+
+        </where>
+    </select>
+
+
+</mapper>

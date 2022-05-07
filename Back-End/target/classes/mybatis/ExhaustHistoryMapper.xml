@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定ExhaustMapper接口-->
+<mapper namespace="com.zzw.mapper.ExhaustHistoryMapper">
+<!--    导出所有的记录可能会用到-->
+    <select id="selectAll" resultType="ExhaustHistory">
+        select * from exhaust_history order by id desc
+    </select>
+
+    <select id="generalSelectInterface" resultType="ExhaustHistory" parameterType="map">
+        select * from exhaust_history
+        <where>
+            <if test="partName != null">
+                and partName = #{partName}
+            </if>
+            <if test="startTime != null">
+                and timeStamp >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and #{endTime} >= timeStamp
+            </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+
+    </select>
+
+    <select id="generalSelectInterfaceNum" parameterType="map" resultType="int">
+        select count(*) from exhaust_history
+        <where>
+            <if test="partName != null">
+                and partName = #{partName}
+            </if>
+            <if test="startTime != null">
+                and timeStamp >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and #{endTime} >= timeStamp
+            </if>
+        </where>
+
+    </select>
+
+
+
+
+    <select id="generalExceedInterface" resultType="ExhaustHistory" parameterType="map">
+        select * from exhaust_history
+        <where>
+            <if test="partName != null">
+                and partName = #{partName}
+            </if>
+            <if test="startTime != null">
+                and timeStamp >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and #{endTime} >= timeStamp
+            </if>
+            and value > standardValue
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+
+    </select>
+
+    <select id="generalExceedInterfaceNum" parameterType="map">
+        select count(*) from exhaust_history
+        <where>
+            <if test="partName != null">
+                and partName = #{partName}
+            </if>
+            <if test="startTime != null">
+                and timeStamp >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and #{endTime} >= timeStamp
+            </if>
+            and value > standardValue
+        </where>
+
+    </select>
+
+
+    <insert id="addExhaustHistory" parameterType="ExhaustHistory">
+        insert into exhaust_history (timeStamp,partName,value) values (#{timeStamp},#{partName},#{value})
+    </insert>
+
+    <delete id="delExhaustHistory" parameterType="int">
+        delete from exhaust_history where id = #{id}
+    </delete>
+
+</mapper>

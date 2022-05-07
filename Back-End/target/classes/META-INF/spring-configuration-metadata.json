@@ -1,0 +1,16 @@
+{
+  "groups": [
+    {
+      "name": "ai",
+      "type": "com.zzw.utils.facesign.BaiduAipUtil",
+      "sourceType": "com.zzw.utils.facesign.BaiduAipUtil"
+    },
+    {
+      "name": "qr",
+      "type": "com.zzw.utils.qrcode.QRCodeUtil",
+      "sourceType": "com.zzw.utils.qrcode.QRCodeUtil"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
