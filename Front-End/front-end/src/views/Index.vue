@@ -402,6 +402,9 @@ export default {
       },1000);
 
       /*******************************************喷淋的初始化模块以及websokcet接口************************************************************************** */
+
+      //使用这种初始化方法有一个问题：那就是不是并发的...
+
       //初始化的时候传递5条数据
       this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=&size=5',purpose:'所有'});
       this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=1&size=3',purpose:'进场'});
