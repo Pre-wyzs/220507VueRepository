@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket接口测试</title>
+    <!-- 引入bootstrap -->
+    <link rel="stylesheet" href="bootstrap.css">
+    <style>
+        .container {
+            display: flex;
+            /* justify-content: space-between; */
+            align-items: flex-start;
+
+            margin: 0px;
+            padding: 0px;
+            
+        }
+
+ 
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <div class="container">
+            <div class="deviceMonitor">
+                <ul class="list-group">
+                    <li class="list-group-item"><h5>尾气检测设备</h5>
+                        <button class="btn btn-sm btn-primary" @click="equipmentOpen(1,'尾气检测设备')">开启</button>
+                        <button class="btn btn-sm btn-danger" @click="equipmentClose(1,'尾气检测设备')">关闭</button>
+                        <span>{{message1}}</span>
+                    </li>
+                    <li class="list-group-item"><h5>扬尘检测设备</h5>
+                        <button class="btn btn-sm btn-primary"  @click="equipmentOpen(2,'扬尘检测设备')">开启</button>
+                        <button class="btn btn-sm btn-danger" @click="equipmentClose(2,'扬尘检测设备')">关闭</button>
+                        <span>{{message2}}</span>
+                    </li>
+                    <li class="list-group-item"><h5>水处理设备1</h5>
+                        <button class="btn btn-sm btn-primary" @click="equipmentOpen(3,'水处理设备1')">开启</button>
+                        <button class="btn btn-sm btn-danger" @click="equipmentClose(3,'水处理设备1')">关闭</button>
+                        <span>{{message3}}</span>
+                    </li>
+                    <li class="list-group-item"><h5>水处理设备2</h5>
+                        <button class="btn btn-sm btn-primary" @click="equipmentOpen(4,'水处理设备2')">开启</button>
+                        <button class="btn btn-sm btn-danger" @click="equipmentClose(4,'水处理设备2')">关闭</button>
+                        <span>{{message4}}</span>
+                    </li>
+                    <li class="list-group-item"><h5>水处理设备3</h5>
+                        <button class="btn btn-sm btn-primary" @click="equipmentOpen(5,'水处理设备3')">开启</button>
+                        <button class="btn btn-sm btn-danger" @click="equipmentClose(5,'水处理设备3')">关闭</button>
+                        <span>{{message5}}</span>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- 尾气检测图表数据模拟模块 -->
+            <div class="exhaust">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            尾气数据发送模拟
+                        </div>
+                        <button class="btn btn-sm btn-primary" @click="sendExhaustData()">模拟发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 扬尘检测数据模拟模块 -->
+            <div class="dust">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            扬尘数据发送模拟
+                        </div>
+                        <button class="btn btn-sm btn-primary" @click="sendDustData()">模拟发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 车辆驾驶模块模拟 -->
+            <div class="car">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            车辆模拟:浙A66666
+                        </div>
+                        <button class="btn btn-sm btn-primary" @click="sendCarRun()">模拟发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进出场喷淋模拟 -->
+            <div class="car">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            浙A66666进场模拟
+                        </div>
+                        <button class="btn btn-sm btn-primary" @click="sendPL(1)">进场喷淋模拟</button>
+                        <button class="btn btn-sm btn-primary" @click="sendPL(2)">出场喷淋模拟</button>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+
+    <!-- 先引入jquery3.4.1，再引入bootsrap.bundle.js -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.4.1.min.js"></script>
+    <script src="bootstrap.bundle.js"></script>
+    <!-- 引入axios处理http请求 -->
+    <!-- 不把js文件下载到本地的一个重要的影响，就是如果网络状况不好，整个html页面的加载就会很慢，甚至加载不出来... -->
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+    <script src="axios.min.js"></script>
+
+    <!-- 1、引入开发环境版本的vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+    <script>
+
+
+        var app = new Vue({
+            el:"#app",  //这个Vue对象管理id为app的这个div元素
+            created(){
+                //转换时间格式的工具
+                Date.prototype.Format = function (fmt) { // author: meizz
+                    var o = {
+                        "M+": this.getMonth() + 1, // 月份
+                        "d+": this.getDate(), // 日
+                        "h+": this.getHours(), // 小时
+                        "m+": this.getMinutes(), // 分
+                        "s+": this.getSeconds(), // 秒
+                        "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+                        "S": this.getMilliseconds() // 毫秒
+                    };
+                    if (/(y+)/.test(fmt))
+                        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                    for (var k in o)
+                        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    return fmt;
+                }
+            },
+            data:{
+                message1:"",  //里面的数据为Hello Vue!
+                message2:"",  //里面的数据为Hello Vue!
+                message3:"",  //里面的数据为Hello Vue!
+                message4:"",  //里面的数据为Hello Vue!
+                message5:"",  //里面的数据为Hello Vue!
+
+                /**
+                 * 浙A66666的模拟路径数据捏
+                 * 120.149835,30.324513
+                 * 120.147775,30.338737
+                 * 120.146573,30.348218
+                 * 120.145715,30.364068
+                 * 120.176786,30.362883
+                 * 120.193437,30.365253
+                 * 
+                */
+               clear:0,
+
+            },
+            methods:{
+                sendPL(flag){
+                    let sendTime = new Date().Format("yyyy-MM-dd hh:mm:ss"); 
+                    let sendDate = new Date().Format("yyyy-MM-dd");
+                    console.log(sendTime,sendDate);
+                    let args = {
+                        license:'浙A66666',
+                        team:'浙江物流',
+                        purpose:flag,
+                        status:1,
+                        timeStamp:sendTime,
+                        date:sendDate
+                    };
+                    axios.post('http://localhost:8080/api/car/pl/add',args).then(function(response){
+                        if(response.data.code=='0'){
+                            console.log('发送成功!');
+                        }
+                    },function(error){
+                    });
+                },
+                sendCarRun(){
+                    let i = 0;
+                    let _this = this; 
+                    let sendTime = null;
+                    //第一辆车的模拟数据
+                    let args = [{ license:'浙A66666', imei:'KHG4522', jd:120.149835, wd:30.324513, timeStamp:null, carStatus:1 },
+                    { license:'浙A66666', imei:'KHG4522', jd:120.147775, wd:30.338737, timeStamp:null, carStatus:1 },
+                    { license:'浙A66666', imei:'KHG4522', jd:120.146573, wd:30.348218, timeStamp:null, carStatus:1 },
+                    { license:'浙A66666', imei:'KHG4522', jd:120.145715, wd:30.364068, timeStamp:null, carStatus:1 },
+                    { license:'浙A66666', imei:'KHG4522', jd:120.176786, wd:30.362883, timeStamp:null, carStatus:1 },
+                    { license:'浙A66666', imei:'KHG4522', jd:120.193437, wd:30.365253, timeStamp:null, carStatus:0 }];
+
+                    //第二辆车的模拟数据
+                    
+
+
+                    setInterval(function(){
+                        sendTime = new Date().Format("yyyy-MM-dd hh:mm:ss"); 
+                        if(args[i]!=null){
+                            args[i].timeStamp = sendTime;
+                            axios.post('http://localhost:8080/api/car/history/add',args[i]).then(function(response){
+                                console.log('写入数据库中!',i);
+                            },function(error){
+                            });
+                        }
+                        i = i+1;
+                        _this.clear = i;
+                    },5000);
+
+                },
+                sendDustData(){
+                    //1、首先要获取开启时间，并转换成yyyy-MM-dd HH:mm:ss的格式
+                    let  sendTime = new Date().Format("yyyy-MM-dd hh:mm:ss"); 
+                    console.log(sendTime);
+                    //2、三个随机数，范围在10-400之间
+                    let newData = {
+                        id:0,
+                        timeStamp:sendTime,
+                        aqi:Math.floor(Math.random()*400 + 10),
+                        pm10:Math.floor(Math.random()*400 + 10),
+                        pm25:Math.floor(Math.random()*400 + 10),
+                        degree:0
+                    }
+
+                    //3、对严重程度进行判断
+                    switch(true){
+                        case newData.aqi>=0&&newData.aqi<=50:
+                            console.log('优级');
+                            newData.degree = 1;
+                            break;
+                        case newData.aqi>50&&newData.aqi<=100:
+                            console.log('良好');
+                            newData.degree = 2;
+                            break;
+                        case newData.aqi>100&&newData.aqi<=150:
+                            console.log('轻微污染');
+                            newData.degree = 3;
+                            break;
+
+                        case newData.aqi>150&&newData.aqi<=200:
+                            console.log('轻度污染');
+                            newData.degree = 4;
+                            break;
+                        
+                        case newData.aqi>200&&newData.aqi<=300:
+                            console.log('中度污染');
+                            newData.degree = 5;
+                            break;
+
+                        case newData.aqi>300:
+                            console.log('重度污染');
+                            newData.degree = 6;
+                            break;
+                    }
+
+                    //4发送数据更新数据库
+                    axios.put("http://localhost:8080/api/dust/add",newData).then(function(response){
+                        if(response.data.code == '0'){
+                            alert('数据发送成功!');
+                        }
+                    },function(error){});
+
+
+
+
+                },
+                sendExhaustData(){
+                    //1、首先要获取开启时间，并转换成yyyy-MM-dd HH:mm:ss的格式
+                    let  sendTime = new Date().Format("yyyy-MM-dd hh:mm:ss"); 
+                    console.log(sendTime);
+
+                    //2、5个随机值在10~180之间
+                    // var num = Math.floor(Math.random()*180 + 10);
+                    let newData = {id:0,
+                        so2:Math.floor(Math.random()*180 + 10),
+                        no:Math.floor(Math.random()*180 + 10),
+                        o3:Math.floor(Math.random()*180 + 10),
+                        hf:Math.floor(Math.random()*180 + 10),
+                        c6H6:Math.floor(Math.random()*180 + 10),
+                        timeStamp:sendTime
+                    };
+                    // console.log(newData);
+                    
+                    let newHistory = [
+                        { id:0, timeStamp:sendTime, partName:'SO2', value:newData.so2, standardValue:null, token:null },
+                        { id:0, timeStamp:sendTime, partName:'NO', value:newData.no, standardValue:null, token:null },
+                        { id:0, timeStamp:sendTime, partName:'O3', value:newData.o3, standardValue:null, token:null },
+                        { id:0, timeStamp:sendTime, partName:'HF', value:newData.hf, standardValue:null, token:null },
+                        { id:0, timeStamp:sendTime, partName:'C6H6', value:newData.c6H6, standardValue:null, token:null },
+                    ];
+
+                    // console.log(newHistory);
+
+                    // 3、把数据更新到数据库
+                    axios.put("http://localhost:8080/api/exhaust/add",newData).then(function(response){
+                        if(response.data.code == '0'){
+                            alert('数据发送成功!');
+                            axios.put("http://localhost:8080/api/exhaustHistory/adds",newHistory).then(function(response){},function(error){});
+                        }
+                    },function(error){});
+                },
+                equipmentOpen(deviceId,deviceName) {
+                    //首先要获取开启时间，并转换成yyyy-MM-dd HH:mm:ss的格式
+                    let  openTime = new Date().Format("yyyy-MM-dd hh:mm:ss"); 
+                    console.log(openTime);
+
+                    let newStatus = {deviceId:deviceId,name:deviceName,status:1,startTime:openTime,closeTime:'',token:null};
+                    let apiUrl = "http://localhost:8080/api/deviceInfo/updateStatus";  //判断token的接口
+                    // let _this = this;
+                    axios.put(apiUrl,newStatus).then(
+                    function(response){
+                        if(response.data.code == '0'){
+                            alert('开启成功!');
+                            //开启成功后还要往数据库中写入打开的历史记录捏!
+                            axios.post("http://localhost:8080/api/deviceHistory/add",{id:null,deviceId:deviceId,name:deviceName,dateTime:openTime,status:1})
+                            .then(function(response){},function(error){});
+
+                        }else {
+                            alert(response.data.msg);
+                        }
+                    },function(error){
+                    })
+
+                    if(deviceId==1){
+                        this.message1 = "运行中";
+                    }else if(deviceId==2){
+                        this.message2 = "运行中";
+                    }else if(deviceId==3){
+                        this.message3 = "运行中";
+                    }else if(deviceId==4){
+                        this.message4 = "运行中";
+                    }else{
+                        this.message5 = "运行中";
+                    }
+
+                },
+                //设备关闭的函数
+                equipmentClose(deviceId,deviceName){
+                    //首先要获取开启时间，并转换成yyyy-MM-dd HH:mm:ss的格式
+                    let  closeTime = new Date().Format("yyyy-MM-dd hh:mm:ss"); 
+                    console.log(closeTime);
+
+                    let newStatus = {deviceId:deviceId,name:deviceName,status:0,startTime:null,closeTime:closeTime,token:null};
+                    let apiUrl = "http://localhost:8080/api/deviceInfo/updateStatus";  //判断token的接口
+                    let _this = this;
+                    axios.put(apiUrl,newStatus).then(
+                    function(response){
+                        if(response.data.code == '0'){
+                            alert('关闭成功!');
+                            //关闭成功后还要往数据库中写入打开的历史记录捏!
+                            axios.post("http://localhost:8080/api/deviceHistory/add",{id:null,deviceId:deviceId,name:deviceName,dateTime:closeTime,status:0})
+                            .then(function(response){},function(error){});
+                        }else {
+                            alert(response.data.msg);
+                        }
+                    },function(error){
+
+                    });
+                    if(deviceId==1){
+                        this.message1 = "已关闭";
+                    }else if(deviceId==2){
+                        this.message2 = "已关闭";
+                    }else if(deviceId==3){
+                        this.message3 = "已关闭";
+                    }else if(deviceId==4){
+                        this.message4 = "已关闭";
+                    }else{
+                        this.message5 = "已关闭";
+                    }
+
+                },
+            }
+
+        });
+
+        
+
+
+
+
+
+    </script>
+
+
+</body>
+
+</html>

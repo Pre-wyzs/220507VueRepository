@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+    <style>
+        a{
+            padding:10px;
+            background-color: orange;
+            color:white;
+            text-decoration: none;
+        }
+        canvas{
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <video id="webCam" autoplay playsinline width="800" height="600"></video>
+    <canvas id="canvas"></canvas>
+    <a download onclick="takeAPhoto()">快照</a>
+
+    <img id="img" width="800" height="600">
+
+    
+</body>
+<script>
+    const webCamDom = document.getElementById("webCam");
+    const canvasDom = document.getElementById("canvas");
+
+    //创建webcam对象
+    const camera = new Webcam(webCamDom,"user",canvasDom);
+
+    //开启摄像头
+    camera.start();
+    console.log('摄像头已开启');
+
+    function takeAPhoto(){
+        let picture = camera.snap();
+
+        console.log(picture);
+        document.querySelector('a').href = picture;
+
+        var img = document.getElementById('img').setAttribute('src',picture);
+
+
+
+    }
+
+</script>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h5>JS 实现文本复制到剪切版</h5>
+    输入内容：<input type="text" id="ipt" autocomplete="off">
+    <button id="btn">一键复制</button>
+
+
+
+    <script>
+        const ipt = document.querySelector("#ipt");
+        const btn = document.querySelector("#btn");
+
+        btn.addEventListener("click",function(){
+            copyToXipboard(ipt.value);
+        });
+
+        function copyToXipboard (str) {
+            const el = document.createElement("textarea");
+            el.value = str;
+            //把这个dom添加到页面上
+            document.body.appendChild(el);
+            //选中这个el dom 
+            el.select();
+            //执行拷贝的命令
+            document.execCommand("copy");
+            //已经通过el复制到剪切板上了，移除这个dom就行了
+            document.body.removeChild(el);
+        }
+
+    </script>
+
+</body>
+</html>
