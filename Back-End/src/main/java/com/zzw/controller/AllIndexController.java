@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @RestController
@@ -54,16 +55,16 @@ public class AllIndexController {
     @GetMapping("/pl")
     @CrossOrigin
     public Result indexSelectPL(@RequestParam(required = false) Integer purpose,
-                                @RequestParam(required = true) Integer size){
+                                @RequestParam Integer size){
 
         Map<String,Object> map = new HashMap<>();
-
-        map.put("date",sdf.format(date));
-        map.put("purpose",purpose);
-        map.put("size",size);
-
+        synchronized (map){
+            map.put("date",sdf.format(date));
+            map.put("purpose",purpose);
+            map.put("size",size);
+        }
         List<CarPL> plList = carPLService.indexSelectPL(map);
-        System.out.println(plList);
+//        System.out.println(plList);
         return Result.success(plList);
     }
 

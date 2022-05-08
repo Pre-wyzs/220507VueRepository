@@ -374,6 +374,10 @@ export default {
       MapContainer,
       Camera
     },
+    created(){
+      //在本组件范围内设置基址接口为这个
+      axios.defaults.baseURL='http://localhost:8080/api/index/';
+    },
     mounted(){
       let _this = this;
       //设定一个计时器，每个一秒钟就执行一次
@@ -402,30 +406,23 @@ export default {
       },1000);
 
       /*******************************************喷淋的初始化模块以及websokcet接口************************************************************************** */
-      //初始化的时候传递5条数据
-      this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=&size=5',purpose:'所有'});
-      this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=1&size=3',purpose:'进场'});
-      this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=2&size=3',purpose:'出场'});
+      this.asyncGetShowers(['pl?purpose=&size=6','pl?purpose=1&size=3','pl?purpose=2&size=3','pl/num']);
       //获取喷淋的数据
-      this.asyncGetShowerNum('http://localhost:8080/api/index/pl/num');
       //并createWebsocket且建立实时的通讯
 
       const stocketPL = createWebsocket("IndexPL-Linking","ws://localhost:8080/ws/api/equipment");
       stocketPL.onmessage = function(evt){
-        _this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=&size=5',purpose:'所有'});
-        _this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=1&size=3',purpose:'进场'});
-        _this.asyncGetShowers({api:'http://localhost:8080/api/index/pl?purpose=2&size=3',purpose:'出场'});
+        _this.asyncGetShowers(['pl?purpose=&size=6','pl?purpose=1&size=3','pl?purpose=2&size=3','pl/num']);
         //获取喷淋的数据
-        _this.asyncGetShowerNum('http://localhost:8080/api/index/pl/num');
       }
 
       
       /*******************************************设备管理的初始化模块以及websocker接口************************************************************************** */
-      this.asyncGetDevices('http://localhost:8080/api/index/device');
+      this.asyncGetDevices('device');
 
       const stocketDevice = createWebsocket("IndexDevice-Linking","ws://localhost:8080/ws/api/equipment");
       stocketDevice.onmessage = function(evt){
-        _this.asyncGetDevices('http://localhost:8080/api/index/device');
+        _this.asyncGetDevices('device');
       }
 
       /*******************************************签到的模块的接口************************************************************************** */
@@ -461,7 +458,8 @@ export default {
    },
     methods:{
       ...mapMutations(['setShowers']),
-      ...mapActions(['asyncGetShowers','asyncGetShowerNum','asyncGetDevices']),
+      ...mapActions(['asyncGetShowers','asyncGetDevices']),
+
 
       zoomControl(){
         var tag = document.getElementById("tip").innerHTML
@@ -510,7 +508,7 @@ export default {
       //获取考勤的数据
       getSignData(){
         let _this = this;
-        axios.get('http://localhost:8080/api/index/sign').then(function(response){
+        axios.get('sign').then(function(response){
           let rets = response.data;
           let map = rets.data
           // console.log(map);
@@ -547,7 +545,7 @@ export default {
       //扬尘检测的图表
       getDustData(){
         let _this = this;
-        axios.get('http://localhost:8080/api/index/dust?size=5').then(function(response){
+        axios.get('dust?size=5').then(function(response){
           let rets = response.data;
           let data = rets.data
           // console.log(map);
@@ -581,7 +579,7 @@ export default {
       //获取尾气的数据
       getExhaustData(){
         let _this = this;
-        axios.get('http://localhost:8080/api/index/exhaust').then(function(response){
+        axios.get('exhaust').then(function(response){
           let rets = response.data;
           let data = rets.data
           // console.log(map);

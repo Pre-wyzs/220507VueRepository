@@ -1,5 +1,4 @@
 //这是index页面的存放数据的数据仓库
-
 import axios from 'axios'
 
 const indexMain = {
@@ -118,13 +117,13 @@ const indexMain = {
     mutations:{
         /*****************************************喷淋模块**********************************************************************/
         setShowers(state,showers){
-            state.showers = showers.reverse();
+            state.showers = showers;
         },
         setShowersIn(state,showersIn){
-             state.showersIn = showersIn.reverse();
+             state.showersIn = showersIn;
         },
         setShowersOut(state,showersOut){
-             state.showersOut= showersOut.reverse();
+             state.showersOut= showersOut;
         },
         setNumIn(state,map){
             state.numIn = map[0];
@@ -150,59 +149,67 @@ const indexMain = {
     },
     actions:{
         /*****************************************喷淋模块**********************************************************************/
-        asyncGetShowers(context,obj){
-            axios.get(obj.api).then(function(response){
-                let rets = response.data;
-                let showers = rets.data;
-                //handle showers
-                let sets = [];
-                let tmp = null;
-
-                showers.forEach(shower=>{
-                    tmp = {
-                        timeStamp:shower.timeStamp,
-                        license:shower.license,
-                        team:shower.team,
-                        purpose:shower.purpose,
-                        status:shower.status
-                    };
-                    sets.push(tmp);
-                });
-                if(obj.purpose=='进场'){
-                    // console.log('进场',showers);
-                    context.commit('setShowersIn',sets);
-                }else if(obj.purpose=='出场'){
-                    // console.log('出场',showers);
-                    context.commit('setShowersOut',sets);
-                }else{
-                    // console.log('所有',showers);
-                    //那就是更新所有的showers
+        //使用axios并发的版本
+        asyncGetShowers(context,apis){
+            // console.log('并发消息已经发送！');
+            axios.all([axios.get(apis[0]),axios.get(apis[1]),axios.get(apis[2]),axios.get(apis[3])]).then(
+                axios.spread(function(response1,response2,response3,num){
+                    let sets = [];
+                    let tmp = null;
+                    //这部分是所有的数据
+                    // console.log('并发返回数据：',response1.data);
+                    response1.data.data.forEach(shower=>{
+                        tmp = { 
+                            timeStamp:shower.timeStamp,
+                            license:shower.license,
+                            team:shower.team,
+                            purpose:shower.purpose,
+                            status:shower.status
+                        };
+                        sets.push(tmp);
+                    })
                     context.commit('setShowers',sets);
-                }
+
+                    //这部分数据是入场喷淋数据
+                    sets = [];  //先清空数组
+                    response2.data.data.forEach(shower=>{
+                        tmp = { 
+                            timeStamp:shower.timeStamp,
+                            license:shower.license,
+                            team:shower.team,
+                            purpose:shower.purpose,
+                            status:shower.status
+                        };
+                        sets.push(tmp);
+                    })
+                    context.commit('setShowersIn',sets);
+
+                    sets = [];  //先清空数组
+                    response3.data.data.forEach(shower=>{
+                        tmp = { 
+                            timeStamp:shower.timeStamp,
+                            license:shower.license,
+                            team:shower.team,
+                            purpose:shower.purpose,
+                            status:shower.status
+                        };
+                        sets.push(tmp);
+                    })
+                    context.commit('setShowersOut',sets);
+
+                    // console.log(response4);
+                    // //这是给数字赋值的
+                    context.commit('setNumIn',num.data.data);
+                    context.commit('setNumOut',num.data.data);
+                    context.commit('setNum',num.data.data);
 
 
-            },function(error){
-                if(error){
-                    console.log(error);
-                }
-            });
+
+
+                })
+            );
         },
-        asyncGetShowerNum(context,api){
-            axios.get(api).then(function(response){
-                let rets = response.data;
-                let map = rets.data;
 
-                //这里如果map是null，进行赋值修改就会报错的捏...
-                // console.log('进出场数量map',map);
-                if(map!=null){
-                    context.commit('setNumIn',map);
-                    context.commit('setNumOut',map);
-                    context.commit('setNum',map);
-                }
-
-            },function(error){
-            });
-        },
 
 
         /*****************************************设备管理模块**********************************************************************/
