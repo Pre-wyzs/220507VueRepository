@@ -4,6 +4,7 @@ package com.zzw.controller;
 import com.zzw.entity.Exhaust;
 import com.zzw.service.ExhaustService;
 import com.zzw.utils.Result;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,15 +23,14 @@ public class ExhaustController {
 
     //获取24小时内的所有成分排放的数据监控结果
     //每5分钟获取一次记录，一个小时可以获取到12条记录，24小时就是288条记录
+    @Deprecated
     @GetMapping("/day")
     @CrossOrigin
     public Result selectByLimit(){
-
         Map<String,Object> map = new HashMap<>();
         map.put("startIndex",0);
         //获取前288条记录
         map.put("chartSize",288);
-
         return Result.success(exhaustService.selectByLimit(map));
     }
 
@@ -83,6 +83,5 @@ public class ExhaustController {
         //删除这一个月内的数据然后返回结果
         return  Result.success(exhaustService.delExhaustDataMonth(map));
     }
-
 
 }

@@ -2,10 +2,10 @@ package com.zzw.controller;
 
 import com.zzw.entity.User;
 import com.zzw.service.UserService;
+import com.zzw.utils.GeneralSelectUtils;
 import com.zzw.utils.Result;
 import com.zzw.utils.jwttoken.JwtUtils;
 import io.jsonwebtoken.Claims;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,58 +32,27 @@ public class UserController {
             @RequestParam(required = false,defaultValue = "5") Integer pageSize
     ){
 
-        //最开始先对传进来的参数进行判断
-        if(id == null){  //因为restful风格中，参数是必须要传递的，所以只能给一个标志位，如果是-1的话就设置该参数为null...
-//            System.out.println("id没传");
-//            id = null;
-        }
         if(power.compareTo("") == 0){
-//            System.out.println("power没传");
             power = null;
         }
         if(nameSure.compareTo("") == 0){
-//            System.out.println("nameSure没传");
             nameSure = null;
         }
         if(nameFuzzy.compareTo("") == 0){
-//            System.out.println("nameFuzzy没传");
             nameFuzzy = null;
         }
-//        if(pageNum == -1){
-//            System.out.println("页码没传");
-//            pageNum = null;
-//        }
-//        if(pageSize == -1){
-//            pageSize = null;
-//            System.out.println("页面大小没传");
-//        }
 
         Map<String,Object> map = new HashMap<>();
-        map.put("id",id);
-        map.put("power",power);
-        map.put("nameSure",nameSure);
-        map.put("nameFuzzy",nameFuzzy);
-        //获取总的记录数
-        Integer rowNum = userService.generalSelectInterfaceNum(map);
-
-        //如果前端没有把指定的页码传递过来，就默认它为一
-//        if(pageNum == null){
-//            pageNum = 1;
-//        }
-//        if(pageSize == null){
-//            pageSize = 5;
-//        }
-
-        map.put("startIndex",(pageNum - 1)*pageSize);
-        map.put("pageSize",pageSize);
-        //传给前端总的页数
-        Integer totalPages;
-        if(rowNum%pageSize == 0){
-            totalPages = rowNum/pageSize;
-        }else {
-            totalPages = rowNum/pageSize + 1;
+        synchronized (map){
+            map.put("id",id);
+            map.put("power",power);
+            map.put("nameSure",nameSure);
+            map.put("nameFuzzy",nameFuzzy);
+            map.put("startIndex",(pageNum - 1)*pageSize);
+            map.put("pageSize",pageSize);
         }
-//        System.out.println("总页数" + totalPages);
+
+        Integer totalPages = GeneralSelectUtils.setTotalPages(userService.generalSelectInterfaceNum(map),pageSize);
         return Result.success(userService.generalSelectInterface(map),totalPages);
     }
 

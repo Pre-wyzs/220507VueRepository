@@ -2,6 +2,7 @@ package com.zzw.controller;
 
 import com.zzw.entity.Worker;
 import com.zzw.service.WorkerService;
+import com.zzw.utils.GeneralSelectUtils;
 import com.zzw.utils.Result;
 import com.zzw.utils.facesign.BaiduAipUtil;
 import com.zzw.utils.jwttoken.JwtUtils;
@@ -33,42 +34,26 @@ public class WorkerController {
         return Result.success(workerService.selectAll());
     }
 
-
-
     @PutMapping("/general")
     @CrossOrigin
     public Result generalSelectInterface(@RequestBody Worker worker){
 
-
         Map<String,Object> map = new HashMap<>();
-//        System.out.println(worker);
-        map.put("name",worker.getName());
-        map.put("age",worker.getAge());
-        map.put("phone",worker.getPhone());
-        map.put("team",worker.getTeam());
-        map.put("enterprise",worker.getEnterprise());
-        map.put("status",worker.getStatus());
-        map.put("idCard",worker.getIdCard());
-        map.put("kind",worker.getKind());
-
-        //获取总的记录数
-        Integer rowNum = workerService.generalSelectInterfaceNum(map);
-        System.out.println(rowNum);
-
-        map.put("startIndex",(worker.getPageNum()- 1)*worker.getPageSize());
-        map.put("pageSize",worker.getPageSize());
-
-        //计算出总的页数：
-        //传给前端总的页数
-        Integer totalPages;
-        if(rowNum%worker.getPageSize()== 0){
-            totalPages = rowNum/worker.getPageSize();
-        }else {
-            totalPages = rowNum/worker.getPageSize()+ 1;
+        synchronized (map){
+            map.put("name",worker.getName());
+            map.put("age",worker.getAge());
+            map.put("phone",worker.getPhone());
+            map.put("team",worker.getTeam());
+            map.put("enterprise",worker.getEnterprise());
+            map.put("status",worker.getStatus());
+            map.put("idCard",worker.getIdCard());
+            map.put("kind",worker.getKind());
+            map.put("startIndex",(worker.getPageNum()- 1)*worker.getPageSize());
+            map.put("pageSize",worker.getPageSize());
         }
-        List<Worker> workers = workerService.generalSelectInterface(map);
-        System.out.println(workers);
 
+        Integer totalPages = GeneralSelectUtils.setTotalPages(workerService.generalSelectInterfaceNum(map),worker.getPageSize());
+        List<Worker> workers = workerService.generalSelectInterface(map);
         return Result.success(workers,totalPages);
     }
 
@@ -255,12 +240,6 @@ public class WorkerController {
             return Result.success();
         }
         return Result.error("-1","权限不够");  //返回给前端插入成功或失败的信息
-
     }
-
-
-
-
-
 
 }

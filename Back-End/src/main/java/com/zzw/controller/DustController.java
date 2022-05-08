@@ -2,6 +2,7 @@ package com.zzw.controller;
 
 import com.zzw.entity.Dust;
 import com.zzw.service.DustService;
+import com.zzw.utils.GeneralSelectUtils;
 import com.zzw.utils.Result;
 import com.zzw.utils.jwttoken.JwtUtils;
 import io.jsonwebtoken.Claims;
@@ -51,21 +52,15 @@ public class DustController {
             endTimeStr = sdf.format(endTime);
         }
 
-        map.put("startTime",startTimeStr);
-        map.put("endTime",endTimeStr);
-        map.put("degree",degree);
-
-        //获取总的记录数
-        Integer rowNum = dustService.generalSelectInterfaceNum(map);
-        map.put("startIndex",(pageNum-1)*pageSize);
-        map.put("pageSize",pageSize);
-
-        Integer totalPages;
-        if(rowNum%pageSize == 0){
-            totalPages = rowNum/pageSize;
-        }else {
-            totalPages = rowNum/pageSize + 1;
+        synchronized (map){
+            map.put("startTime",startTimeStr);
+            map.put("endTime",endTimeStr);
+            map.put("degree",degree);
+            map.put("startIndex",(pageNum-1)*pageSize);
+            map.put("pageSize",pageSize);
         }
+
+        Integer totalPages = GeneralSelectUtils.setTotalPages(dustService.generalSelectInterfaceNum(map),pageSize);
         return Result.success(dustService.generalSelectInterface(map),totalPages);
     }
 

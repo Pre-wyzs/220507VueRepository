@@ -63,7 +63,7 @@
 
     </select>
 
-    <select id="generalExceedInterfaceNum" parameterType="map">
+    <select id="generalExceedInterfaceNum" parameterType="map" resultType="int">
         select count(*) from exhaust_history
         <where>
             <if test="partName != null">

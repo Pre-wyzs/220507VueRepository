@@ -33,13 +33,14 @@ public class CarHistoryController {
 
         Map<String,Object> map = new HashMap<>();
         Integer totalPages = 1;
-        map.put("license",carHistory.getLicense());
-        map.put("IMEI",carHistory.getIMEI());
+        synchronized (map){
+            map.put("license",carHistory.getLicense());
+            map.put("IMEI",carHistory.getIMEI());
+            map.put("startIndex",GeneralSelectUtils.setStartIndex(carHistory.getPageNum(),carHistory.getPageSize()));
+            map.put("pageSize",carHistory.getPageSize());
+        }
 
         totalPages = GeneralSelectUtils.setTotalPages(service.generalSelectInterfaceNum(map),carHistory.getPageSize());
-        map.put("startIndex",GeneralSelectUtils.setStartIndex(carHistory.getPageNum(),carHistory.getPageSize()));
-        map.put("pageSize",carHistory.getPageSize());
-
         List<CarHistory> carHistories= service.generalSelectInterface(map);
         return Result.success(carHistories,totalPages);
     }

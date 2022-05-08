@@ -2,6 +2,7 @@ package com.zzw.controller;
 
 import com.zzw.entity.DeviceInfo;
 import com.zzw.service.DeviceInfoService;
+import com.zzw.utils.GeneralSelectUtils;
 import com.zzw.utils.Result;
 import com.zzw.utils.jwttoken.JwtUtils;
 import io.jsonwebtoken.Claims;
@@ -42,23 +43,16 @@ public class DeviceInfoController {
         }
 
         Map<String,Object> map = new HashMap<>();
-        map.put("nameSure",nameSure);
-        map.put("nameFuzzy",nameFuzzy);
-        map.put("status",status);
-        //获取总的记录数
-        Integer rowNum = deviceInfoService.generalSelectInterfaceNum(map);
-
-        map.put("startIndex",(pageNum - 1)*pageSize);
-        map.put("pageSize",pageSize);
-        //传给前端总的页数
-        Integer totalPages;
-        if(rowNum%pageSize == 0){
-            totalPages = rowNum/pageSize;
-        }else {
-            totalPages = rowNum/pageSize + 1;
+        synchronized (map){
+            map.put("nameSure",nameSure);
+            map.put("nameFuzzy",nameFuzzy);
+            map.put("status",status);
+            map.put("startIndex",(pageNum - 1)*pageSize);
+            map.put("pageSize",pageSize);
         }
 
-
+        //获取总的记录数
+        Integer totalPages = GeneralSelectUtils.setTotalPages(deviceInfoService.generalSelectInterfaceNum(map),pageSize);
         return Result.success(deviceInfoService.generalSelectInterface(map),totalPages);
     }
 

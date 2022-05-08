@@ -1,6 +1,5 @@
 package com.zzw.controller;
 
-import com.zzw.entity.CarHistory;
 import com.zzw.entity.CarPL;
 import com.zzw.service.CarPLService;
 import com.zzw.utils.Result;
@@ -13,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/car/pl")
@@ -35,7 +35,7 @@ public class CarPLController {
         if(carPL.getStartDate()==null || carPL.getEndDate()==null){
             return Result.error("-1","前后时间段不完整");
         }
-        Map<String,Object> map = new HashMap<>();
+        Map<String,Object> map = new ConcurrentHashMap<>();  //线程安全
         map.put("startDate",carPL.getStartDate());
         map.put("endDate",carPL.getEndDate());
 

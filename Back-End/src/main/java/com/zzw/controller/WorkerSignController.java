@@ -6,6 +6,7 @@ import com.zzw.entity.WorkerSign;
 import com.zzw.service.SignConfigService;
 import com.zzw.service.WorkerService;
 import com.zzw.service.WorkerSignService;
+import com.zzw.utils.GeneralSelectUtils;
 import com.zzw.utils.Result;
 import com.zzw.utils.facesign.BaiduAipUtil;
 import com.zzw.utils.jwttoken.JwtUtils;
@@ -131,33 +132,21 @@ public class WorkerSignController {
     public Result generalSelectInterface(@RequestBody WorkerSign workerSign){
 
         Map<String,Object> map = new HashMap<>();
-//        System.out.println(worker);
-        map.put("name",workerSign.getName());
-        map.put("team",workerSign.getTeam());
-        map.put("enterprise",workerSign.getEnterprise());
-        map.put("idCard",workerSign.getIdCard());
-        map.put("purpose",workerSign.getPurpose());
-        map.put("sign",workerSign.getSign());
-        map.put("startTime",workerSign.getStartTime());
-        map.put("endTime",workerSign.getEndTime());
-
-        //获取总的记录数
-        Integer rowNum = signService.generalSelectInterfaceNum(map);
-        System.out.println(rowNum);
-
-        map.put("startIndex",(workerSign.getPageNum()- 1)*workerSign.getPageSize());
-        map.put("pageSize",workerSign.getPageSize());
-
-        //计算出总的页数：
-        //传给前端总的页数
-        Integer totalPages;
-        if(rowNum%workerSign.getPageSize()== 0){
-            totalPages = rowNum/workerSign.getPageSize();
-        }else {
-            totalPages = rowNum/workerSign.getPageSize()+ 1;
+        synchronized (map){
+            map.put("name",workerSign.getName());
+            map.put("team",workerSign.getTeam());
+            map.put("enterprise",workerSign.getEnterprise());
+            map.put("idCard",workerSign.getIdCard());
+            map.put("purpose",workerSign.getPurpose());
+            map.put("sign",workerSign.getSign());
+            map.put("startTime",workerSign.getStartTime());
+            map.put("endTime",workerSign.getEndTime());
+            map.put("startIndex",(workerSign.getPageNum()- 1)*workerSign.getPageSize());
+            map.put("pageSize",workerSign.getPageSize());
         }
+
+        Integer totalPages = GeneralSelectUtils.setTotalPages(signService.generalSelectInterfaceNum(map),workerSign.getPageSize());
         List<WorkerSign> workerSignList = signService.generalSelectInterface(map);
-        System.out.println(workerSignList);
         return Result.success(workerSignList,totalPages);
     }
 

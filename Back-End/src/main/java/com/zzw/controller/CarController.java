@@ -41,17 +41,18 @@ public class CarController {
 
         Map<String,Object> map = new HashMap<>();
         Integer totalPages = 1;
-        map.put("name",car.getName());
-        map.put("team",car.getTeam());
-        map.put("IMEI",car.getIMEI());
-        map.put("license",car.getLicense());
-        map.put("startDate",car.getStartDate());
-        map.put("endDate",car.getEndDate());
+        synchronized (map){
+            map.put("name",car.getName());
+            map.put("team",car.getTeam());
+            map.put("IMEI",car.getIMEI());
+            map.put("license",car.getLicense());
+            map.put("startDate",car.getStartDate());
+            map.put("endDate",car.getEndDate());
+            map.put("startIndex",GeneralSelectUtils.setStartIndex(car.getPageNum(),car.getPageSize()));
+            map.put("pageSize",car.getPageSize());
+        }
 
         totalPages = GeneralSelectUtils.setTotalPages(service.generalSelectInterfaceNum(map),car.getPageSize());
-        map.put("startIndex",GeneralSelectUtils.setStartIndex(car.getPageNum(),car.getPageSize()));
-        map.put("pageSize",car.getPageSize());
-
         List<Car> cars = service.generalSelectInterface(map);
 
         return Result.success(cars,totalPages);

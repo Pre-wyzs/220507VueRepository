@@ -2,6 +2,7 @@ package com.zzw.controller;
 
 import com.zzw.entity.ExhaustHistory;
 import com.zzw.service.ExhaustHistoryService;
+import com.zzw.utils.GeneralSelectUtils;
 import com.zzw.utils.Result;
 import com.zzw.utils.jwttoken.JwtUtils;
 import io.jsonwebtoken.Claims;
@@ -53,23 +54,15 @@ public class ExhaustHistoryController {
             endTimeStr = sdf.format(endTime);
         }
 
-        map.put("partName",partName);
-        map.put("startTime",startTimeStr);
-        map.put("endTime",endTimeStr);
-
-        //获取总的记录数
-        Integer rowNum = exhaustHistoryService.generalSelectInterfaceNum(map);
-        map.put("startIndex",(pageNum-1)*pageSize);
-        map.put("pageSize",pageSize);
-
-        //计算出总的页数：
-        //传给前端总的页数
-        Integer totalPages;
-        if(rowNum%pageSize == 0){
-            totalPages = rowNum/pageSize;
-        }else {
-            totalPages = rowNum/pageSize + 1;
+        synchronized (map){
+            map.put("partName",partName);
+            map.put("startTime",startTimeStr);
+            map.put("endTime",endTimeStr);
+            map.put("startIndex",(pageNum-1)*pageSize);
+            map.put("pageSize",pageSize);
         }
+
+        Integer totalPages = GeneralSelectUtils.setTotalPages(exhaustHistoryService.generalExceedInterfaceNum(map),pageSize);
         return Result.success(exhaustHistoryService.generalSelectInterface(map),totalPages);
     }
 
@@ -103,14 +96,16 @@ public class ExhaustHistoryController {
             endTimeStr = sdf.format(endTime);
         }
 
-        map.put("partName",partName);
-        map.put("startTime",startTimeStr);
-        map.put("endTime",endTimeStr);
+        synchronized (map){
+            map.put("partName",partName);
+            map.put("startTime",startTimeStr);
+            map.put("endTime",endTimeStr);
+            map.put("startIndex",(pageNum-1)*pageSize);
+            map.put("pageSize",pageSize);
+        }
 
         //获取总的记录数
         Integer rowNum = exhaustHistoryService.generalExceedInterfaceNum(map);
-        map.put("startIndex",(pageNum-1)*pageSize);
-        map.put("pageSize",pageSize);
 
         Integer totalPages;
         if(rowNum%pageSize == 0){

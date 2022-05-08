@@ -5,15 +5,19 @@ spring:
     url: jdbc:mysql://localhost:3306/vuespringboot?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      #链接的最长闲置时间是20s，如果20s没干活就放回连接池中了
-      #idleTimeout: 20000
+
       #池中最少有20个备用的连接
-      minimumIdle: 20
+      minimumIdle: 25
       #池中最大不得超过30个连接
-      maximumPoolSize: 30
-      #连接在用完后3秒以内就要断开回收到连接池中
+      maximumPoolSize: 50
+
+      #什么是life，就是已经和数据库建立了真实连接传递数据了的连接，这个连接在数据传递完成后只能再和数据库保持30s的连接,
+      #然后就会断掉，并被放入连接池中成为“空闲连接”
       #这是它的最小值了，不能再比这个还小了。。。
       max-lifetime: 30000
+
+      #什么是idle，就是一个连接在连接池中存在的时间，其中25个常被连接在连接池中永远不会被删除，
+      #但是多出来的那些连接就是“空闲连接”，在连接池中超过10s就会被彻底删除掉!
       idle-timeout: 10000
 
   #文件上传大小的设置
