@@ -25,7 +25,11 @@
 
     <div class="form-group">
       <label for="exampleInputEmail1" class="myForm">用户权限</label>
-      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="power" />
+      <select class="custom-select" v-model="power">
+          <option value="0" class="text-primary">超级管理</option> 
+          <option value="1" class="text-success">普通管理</option>
+          <option value="2" class="text-danger">普通用户</option>
+      </select>
       <small id="emailHelp" class="form-text text-muted" >请输入用户权限</small
       >
     </div>
@@ -45,7 +49,7 @@ export default {
           id:'',
           name:'',
           password:'',
-          power:''
+          power:'0'
       }
   },
   methods:{

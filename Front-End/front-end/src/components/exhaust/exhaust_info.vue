@@ -190,12 +190,13 @@ export default {
 
     updatePieData(exhausts){
         let pieData = [];
+        let last = exhausts.length-1;
 
-        pieData.push({name:'SO2',value:exhausts[0].so2});
-        pieData.push({name:'NO',value:exhausts[0].no});
-        pieData.push({name:'O3',value:exhausts[0].o3});
-        pieData.push({name:'HF',value:exhausts[0].hf});
-        pieData.push({name:'C6H6',value:exhausts[0].c6H6});
+        pieData.push({name:'SO2',value:exhausts[last].so2});
+        pieData.push({name:'NO',value:exhausts[last].no});
+        pieData.push({name:'O3',value:exhausts[last].o3});
+        pieData.push({name:'HF',value:exhausts[last].hf});
+        pieData.push({name:'C6H6',value:exhausts[last].c6H6});
 
         return pieData;
     },
@@ -203,12 +204,13 @@ export default {
     updateRadarData(exhausts){
         let radarData = [];
         // console.log(this._exhausts);这里也确实获取到了exhausts的值
+        let last = exhausts.length-1;
 
-        radarData.push(exhausts[0].so2);
-        radarData.push(exhausts[0].no);
-        radarData.push(exhausts[0].o3);
-        radarData.push(exhausts[0].hf);
-        radarData.push(exhausts[0].c6H6);
+        radarData.push(exhausts[last].so2);
+        radarData.push(exhausts[last].no);
+        radarData.push(exhausts[last].o3);
+        radarData.push(exhausts[last].hf);
+        radarData.push(exhausts[last].c6H6);
 
         return radarData;
     },

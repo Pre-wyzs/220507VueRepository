@@ -2,45 +2,31 @@
 <div style="background:rgb(0 0 0 / 45%);border-radius:10px;padding:15px;">
     <div class="form-group">
       <label for="exampleInputEmail0" class="myForm">用户姓名</label>
-      <input
-        type="text"
-        class="form-control"
-        id="exampleInputEmail1"
-        aria-describedby="emailHelp"
-        v-model="name"
-      />
-      <small id="emailHelp" class="form-text text-muted"
-        >请输入用户名</small
-      >
+      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="name" />
+      <small id="emailHelp" class="form-text text-muted" >请输入用户名</small>
     </div>
     <div class="form-group">
       <label for="exampleInputPassword1" class="myForm">用户密码</label>
       <input type="password" class="form-control" id="exampleInputPassword1" v-model="password0"/>
-      <small id="emailHelp" class="form-text text-muted"
-        >请输入密码</small
-      >
+      <small id="emailHelp" class="form-text text-muted" >请输入密码</small>
     </div>
 
     <div class="form-group">
       <label for="exampleInputPassword2" class="myForm">确认密码</label>
       <input type="password" class="form-control" id="exampleInputPassword2" v-model="password1"/>
-      <small id="emailHelp" class="form-text text-muted"
-        >请确认密码</small
-      >
+      <small id="emailHelp" class="form-text text-muted" >请确认密码</small>
     </div>
     <div class="form-group">
       <label for="exampleInputEmail" class="myForm">用户权限</label>
-      <input
-        type="text"
-        class="form-control"
-        id="exampleInputEmail1"
-        aria-describedby="emailHelp"
-        v-model="power"
-      />
-      <small id="emailHelp" class="form-text text-muted"
-        >请输入用户权限</small
-      >
+        <select class="custom-select" v-model="power">
+            <option value="0" class="text-primary">超级管理</option> 
+            <option value="1" class="text-success">普通管理</option>
+            <option value="2" class="text-danger">普通用户</option>
+        </select>
+
+      <small id="emailHelp" class="form-text text-muted" >请输入用户权限</small>
     </div>
+
     <button type="submit" class="btn btn-primary" @click="addUser">提交</button>
     <router-link to="/home/admin">
     <button type="button" class="btn btn-danger" style="margin-left:20px;">返回</button>
@@ -103,4 +89,5 @@ export default {
 .myForm {
     color:white;
 }
+
 </style>
